@@ -2,17 +2,24 @@ const admin = require('firebase-admin');
 
 let db = null;
 
-// IMPORTANT: Requires serviceAccountKey.json to be placed in backend/config/
+// Try to load serviceAccountKey.json from local config, then fallback to parent dir (for Render)
 try {
-    const serviceAccount = require("./serviceAccountKey.json");
+    let serviceAccount;
+    try {
+        serviceAccount = require("./serviceAccountKey.json");
+    } catch (err) {
+        // Render places secret files in the root folder of the service
+        serviceAccount = require("../serviceAccountKey.json");
+    }
+
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });
     db = admin.firestore();
     console.log("Firebase Admin Initialized Successfully");
 } catch (e) {
-    console.warn("⚠️ Firebase Admin SDK NOT initialized: serviceAccountKey.json is missing in backend/config/");
-    console.warn("Please download it from Firebase Console > Project Settings > Service Accounts.");
+    console.warn("⚠️ Firebase Admin SDK NOT initialized: serviceAccountKey.json is missing");
+    console.warn("Please add it as a secret file in Render or download from Firebase Console.");
 }
 
 const verifyToken = async (req, res, next) => {
