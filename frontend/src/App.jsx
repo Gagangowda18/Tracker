@@ -11,6 +11,8 @@ import {
 import { auth, signInWithGoogle, logOut, googleProvider } from './firebase';
 import { onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -79,7 +81,7 @@ function App() {
     setIsLoading(true);
     try {
       const idToken = await currentUser.getIdToken();
-      const response = await fetch('http://localhost:5000/api/transactions', {
+      const response = await fetch(`${API_URL}/api/transactions`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }
@@ -119,7 +121,7 @@ function App() {
 
       const idToken = await user.getIdToken();
 
-      const response = await fetch('http://localhost:5000/api/sync-emails', {
+      const response = await fetch(`${API_URL}/api/sync-emails`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -161,7 +163,7 @@ function App() {
     setTransactions(prev => prev.filter(t => t.id !== id));
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`http://localhost:5000/api/transactions/${id}`, {
+      const response = await fetch(`${API_URL}/api/transactions/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${idToken}` }
       });
@@ -180,7 +182,7 @@ function App() {
     setIsLoading(true);
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch('http://localhost:5000/api/transactions', {
+      const response = await fetch(`${API_URL}/api/transactions`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${idToken}` }
       });
